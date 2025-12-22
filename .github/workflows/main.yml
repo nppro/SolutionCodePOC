@@ -16,14 +16,33 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd ~/student-app || exit 1
-            git pull origin main
-
+            set -e
+          
+            APP_DIR=/student-app
+            REPO_URL=https://github.com/nppro/SolutionCodePOC.git
+          
+            # Ensure app directory exists
+            mkdir -p $APP_DIR
+            cd $APP_DIR
+          
+            # Clone or update repo
+            if [ ! -d ".git" ]; then
+              echo "Cloning repository..."
+              rm -rf *
+              git clone $REPO_URL .
+            else
+              echo "Pulling latest code..."
+              git pull origin main
+            fi
+          
+            # Stop and remove old container if exists
             docker stop student-app || true
             docker rm student-app || true
-
+          
+            # Build image
             docker build -t student-app:latest .
-
+          
+            # Run container
             docker run -d \
               --name student-app \
               -p 80:3000 \
@@ -32,3 +51,4 @@ jobs:
               -e APP_DB_PASSWORD=student12 \
               -e APP_DB_NAME=STUDENTS \
               student-app:latest
+            
