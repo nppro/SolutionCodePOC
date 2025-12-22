@@ -22,7 +22,6 @@ jobs:
             REPO_URL=https://github.com/nppro/SolutionCodePOC.git
           
             # Ensure app directory exists
-            mkdir -p $APP_DIR
             cd $APP_DIR
           
             # Clone or update repo
