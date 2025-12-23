@@ -14,4 +14,4 @@ ENV NODE_ENV=production
 ENV APP_PORT=3000
 EXPOSE 3000
 
-CMD ["npm", "start"]
+CMD ["node", "index.js"]
