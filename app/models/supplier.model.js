@@ -25,6 +25,24 @@ Supplier.dbConnect = () => {
             throw error;
         }
         console.log("Successfully connected to the database.");
+
+        // check if the students table exists, create if not
+        const createStudentsTableQuery = `CREATE TABLE IF NOT EXISTS students (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            name VARCHAR(255) NOT NULL,
+            address VARCHAR(255) NOT NULL,
+            city VARCHAR(100) NOT NULL,
+            state VARCHAR(100) NOT NULL,
+            email VARCHAR(100),
+            phone VARCHAR(20)
+        )`;
+        connection.query(createStudentsTableQuery, (err, results) => {
+            if (err) {
+                console.log("Error creating students table:", err);
+                throw err;
+            }
+            console.log("Students table is ready.");
+        });
     });
     return connection;
 }
