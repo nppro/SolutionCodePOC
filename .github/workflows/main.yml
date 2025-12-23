@@ -17,13 +17,13 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-          
+
             APP_DIR=student-app
             REPO_URL=https://github.com/nppro/SolutionCodePOC.git
-          
+
             # Ensure app directory exists
             cd ~/$APP_DIR
-          
+
             # Clone or update repo
             if [ ! -d ".git" ]; then
               echo "Cloning repository..."
@@ -33,21 +33,7 @@ jobs:
               echo "Pulling latest code..."
               git pull origin main
             fi
-          
-            # Stop and remove old container if exists
-            docker stop student-app || true
-            docker rm student-app || true
-          
-            # Build image
-            docker build -t student-app:latest .
-          
-            # Run container
-            docker run -d \
-              --name student-app \
-              -p 80:3000 \
-              -e APP_DB_HOST=localhost \
-              -e APP_DB_USER=nodeapp \
-              -e APP_DB_PASSWORD=student12 \
-              -e APP_DB_NAME=STUDENTS \
-              student-app:latest
-            
+
+            # Restart application using docker-compose
+            docker compose down || true
+            docker compose up -d --build
