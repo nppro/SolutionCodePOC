@@ -7,13 +7,14 @@ let config = {
 }
 
 var AWS = require('aws-sdk');
+
+try {
 var client = new AWS.SecretsManager({
     region: "us-east-1"
 });
 
 const secretName = "Mydbsecret";
 
-//let APP_DB_USER;
 
 client.getSecretValue({SecretId: secretName}, function(err, data) {
     if (err) {
@@ -48,6 +49,15 @@ client.getSecretValue({SecretId: secretName}, function(err, data) {
     // console log in case of error
     //console.log(err);
 });
+
+} catch (e) {
+  config.APP_DB_HOST = "localhost";
+  config.APP_DB_NAME = "STUDENTS";
+  config.APP_DB_PASSWORD = "student12";
+  config.APP_DB_USER = "nodeapp";
+  console.log('Secrets not found. Proceeding with default values..');
+}
+
 
 
 Object.keys(config).forEach(key => {
