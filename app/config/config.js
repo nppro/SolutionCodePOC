@@ -27,9 +27,8 @@ try {
       const parsedSecret = JSON.parse(secret);
 
       config.APP_DB_HOST = parsedSecret.host;
-      config.APP_DB_NAME = parsedSecret.db;
       config.APP_DB_PASSWORD = parsedSecret.password;
-      config.APP_DB_USER = parsedSecret.user;
+      config.APP_DB_USER = parsedSecret.username;
 
       console.log("Secrets retrieved from AWS Secrets Manager");
     })
