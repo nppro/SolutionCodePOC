@@ -1,0 +1,45 @@
+name: Deploy Node App to EC2 and RDS
+
+on:
+  push:
+    branches: ["phrase-4"]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_LAB_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_LAB_SSH_KEY }}
+          script: |
+            set -e
+
+            APP_DIR=student-app
+            REPO_URL=https://github.com/nppro/SolutionCodePOC.git
+
+            # Prepare app directory
+            mkdir -p ~/$APP_DIR
+            cd ~/$APP_DIR
+
+            if [ ! -d ".git" ]; then
+              git clone $REPO_URL .
+            else
+              git pull origin phrase-4
+            fi
+
+            # Stop & remove old container
+            docker stop student-app || true
+            docker rm student-app || true
+
+            # Build new image
+            docker build -t student-app:latest .
+
+            # Run container (NO DB ENV VARS)
+            docker run -d \
+              --name student-app \
+              -p 80:3000 \
+              student-app:latest
