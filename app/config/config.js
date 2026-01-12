@@ -38,11 +38,13 @@ try {
       throw err;
     });
 } catch (e) {
-  config.APP_DB_HOST = "localhost";
-  config.APP_DB_NAME = "STUDENTS";
-  config.APP_DB_PASSWORD = "student12";
-  config.APP_DB_USER = "nodeapp";
-  console.log("Secrets not found. Proceeding with default values..");
+  // config.APP_DB_HOST = "localhost";
+  // config.APP_DB_NAME = "STUDENTS";
+  // config.APP_DB_PASSWORD = "student12";
+  // config.APP_DB_USER = "nodeapp";
+  console.error("Secrets not found. Proceeding with default values..");
+  console.error(e);
+  process.exit(1);
 }
 
 // Object.keys(config).forEach((key) => {
