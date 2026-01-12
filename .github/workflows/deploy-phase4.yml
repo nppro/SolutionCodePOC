@@ -28,7 +28,7 @@ jobs:
             if [ ! -d ".git" ]; then
               git clone $REPO_URL .
             else
-              git pull origin phrase-4
+              git pull origin main
             fi
 
             # Stop & remove old container
