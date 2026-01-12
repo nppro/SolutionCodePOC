@@ -30,6 +30,8 @@ try {
       config.APP_DB_NAME = parsedSecret.db;
       config.APP_DB_PASSWORD = parsedSecret.password;
       config.APP_DB_USER = parsedSecret.user;
+
+      console.log("Secrets retrieved from AWS Secrets Manager");
     })
     .catch((err) => {
       console.log("Error retrieving secrets from AWS Secrets Manager", err);
@@ -43,14 +45,14 @@ try {
   console.log("Secrets not found. Proceeding with default values..");
 }
 
-Object.keys(config).forEach((key) => {
-  if (process.env[key] === undefined) {
-    console.log(
-      `[NOTICE] Value for key '${key}' not found in ENV, using default value.  See app/config/config.js`
-    );
-  } else {
-    config[key] = process.env[key];
-  }
-});
+// Object.keys(config).forEach((key) => {
+//   if (process.env[key] === undefined) {
+//     console.log(
+//       `[NOTICE] Value for key '${key}' not found in ENV, using default value.  See app/config/config.js`
+//     );
+//   } else {
+//     config[key] = process.env[key];
+//   }
+// });
 
 module.exports = config;
