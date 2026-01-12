@@ -17,7 +17,7 @@ try {
 
   client
     .send(
-      new GetSecretValueCommand({
+      new AWS.GetSecretValueCommand({
         SecretId: secretName,
         VersionStage: "AWSCURRENT", // VersionStage defaults to AWSCURRENT if unspecified
       })
