@@ -3,16 +3,15 @@ version: "3.9"
 services:
   app:
     build: .
-    restart: unless-stopped
     environment:
-      NODE_ENV: production
+      NODE_ENV: local
       APP_PORT: 3000
       APP_DB_HOST: db
       APP_DB_USER: nodeapp
       APP_DB_PASSWORD: student12
       APP_DB_NAME: STUDENTS
     ports:
-      - "80:3000"
+      - "3000:3000"
     depends_on:
       db:
         condition: service_healthy
