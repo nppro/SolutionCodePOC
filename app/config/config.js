@@ -3,7 +3,7 @@ let config = {
   APP_DB_HOST: "localhost",
   APP_DB_USER: "nodeapp",
   APP_DB_PASSWORD: "student12",
-  APP_DB_NAME: "STUDENTS",
+  APP_DB_NAME: "students",
 };
 
 var AWS = require("@aws-sdk/client-secrets-manager");
