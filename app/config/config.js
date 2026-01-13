@@ -27,8 +27,8 @@ try {
       const parsedSecret = JSON.parse(secret);
 
       config.APP_DB_HOST = parsedSecret.host;
-      config.APP_DB_PASSWORD = parsedSecret.password;
-      config.APP_DB_USER = parsedSecret.username;
+      config.APP_DB_USER = "admin";
+      config.APP_DB_PASSWORD = "f)2QxtVAfVy:uL]4h*D-vWigZmiJ";
 
       console.log("Secrets retrieved from AWS Secrets Manager");
     })
@@ -46,14 +46,14 @@ try {
   process.exit(1);
 }
 
-// Object.keys(config).forEach((key) => {
-//   if (process.env[key] === undefined) {
-//     console.log(
-//       `[NOTICE] Value for key '${key}' not found in ENV, using default value.  See app/config/config.js`
-//     );
-//   } else {
-//     config[key] = process.env[key];
-//   }
-// });
+Object.keys(config).forEach((key) => {
+  if (process.env[key] === undefined) {
+    console.log(
+      `[NOTICE] Value for key '${key}' not found in ENV, using default value.  See app/config/config.js`
+    );
+  } else {
+    config[key] = process.env[key];
+  }
+});
 
 module.exports = config;
