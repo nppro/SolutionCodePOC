@@ -5,6 +5,7 @@ const supplier = require("./app/controller/supplier.controller");
 const app = express();
 const mustacheExpress = require("mustache-express");
 const favicon = require("serve-favicon");
+const loadConfig = require("./app/config/config");
 
 const fs = require("fs");
 
@@ -40,7 +41,7 @@ app.post("/supplier-remove/:id", supplier.remove);
 
 // debug
 app.get("/debug", async (req, res) => {
-  const config = await require("./app/config/config").loadConfig();
+  const config = await loadConfig.loadConfig();
   res.json({
     config: {
       host: config.APP_DB_HOST,
