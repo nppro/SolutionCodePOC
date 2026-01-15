@@ -22,10 +22,11 @@ Supplier.dbConnect = () => {
   });
   connection.connect((error) => {
     if (error) {
+      fs.appendFileSync("/tmp/app.log", error);
       console.log("Error connecting to Db");
       return;
     }
-    fs.appendFileSync("/tmp/app.log", "DB connected\n");
+
     console.log("Successfully connected to the database.");
 
     // check if the students table exists, create if not
