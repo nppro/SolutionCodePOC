@@ -5,6 +5,8 @@ const supplier = require("./app/controller/supplier.controller");
 const app = express();
 const mustacheExpress = require("mustache-express");
 const favicon = require("serve-favicon");
+const config = require("./app/config/config");
+const fs = require("fs");
 
 // parse requests of content-type: application/json
 app.use(bodyParser.json());
@@ -35,13 +37,9 @@ app.get("/supplier-update/:id", supplier.findOne);
 app.post("/supplier-update", supplier.update);
 // receive the POST to delete a supplier
 app.post("/supplier-remove/:id", supplier.remove);
-// handle 404
-app.use(function (req, res, next) {
-  res.status(404).render("404", {});
-});
 
 // debug
-app.get("/debug", (req, res) => {
+app.get("/debug", async (req, res) => {
   res.json({
     config: {
       host: config.APP_DB_HOST,
@@ -56,6 +54,11 @@ app.get("/debug", (req, res) => {
 app.get("/logs", (req, res) => {
   const logs = fs.readFileSync("/tmp/app.log", "utf-8");
   res.type("text/plain").send(logs);
+});
+
+// handle 404
+app.use(function (req, res, next) {
+  res.status(404).render("404", {});
 });
 
 // set port, listen for requests
