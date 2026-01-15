@@ -38,9 +38,9 @@ jobs:
             # Build new image
             docker build -t student-app:latest .
 
-            # Run container (NO DB ENV VARS)
-            docker run -d \
-              --name student-app \
-              --restart unless-stopped \
-              -p 80:3000 \
-              student-app:latest
+            # # Run container (NO DB ENV VARS)
+            # docker run -d \
+            #   --name student-app \
+            #   --restart unless-stopped \
+            #   -p 80:3000 \
+            #   student-app:latest
