@@ -1,6 +1,5 @@
-const mysql = require("mysql2");
-const loadConfig = require("../config/config");
-const fs = require("fs");
+const { getDB } = require("../config/db");
+
 // constructor
 const Supplier = function (supplier) {
   this.id = supplier.id;
@@ -11,97 +10,44 @@ const Supplier = function (supplier) {
   this.email = supplier.email;
   this.phone = supplier.phone;
 };
-// connecting on each request so the server will start without a db connection, plus
-//   a simple mechanism enabling the app to recover from a momentary missing db connection
-Supplier.dbConnect = async () => {
-  const dbConfig = await loadConfig.loadConfig();
-  let log = `DB CONFIG: ${JSON.stringify(dbConfig)}`;
-  fs.appendFileSync("/tmp/app.log", log);
 
-  const connection = mysql.createConnection({
-    host: dbConfig.APP_DB_HOST,
-    user: dbConfig.APP_DB_USER,
-    password: dbConfig.APP_DB_PASSWORD,
-    database: dbConfig.APP_DB_NAME,
-  });
-  connection.connect((error) => {
-    if (error) {
-      console.log("Error connecting to Db");
-      return;
-    }
-
-    console.log("Successfully connected to the database.");
-
-    // check if the students table exists, create if not
-    const createStudentsTableQuery = `CREATE TABLE IF NOT EXISTS students (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            name VARCHAR(255) NOT NULL,
-            address VARCHAR(255) NOT NULL,
-            city VARCHAR(100) NOT NULL,
-            state VARCHAR(100) NOT NULL,
-            email VARCHAR(100),
-            phone VARCHAR(20)
-        )`;
-    connection.query(createStudentsTableQuery, (err, results) => {
-      if (err) {
-        console.log("Error creating students table:", err);
-        return;
-      }
-      console.log("Students table is ready.");
-    });
-  });
-  return connection;
+Supplier.create = async (newSupplier) => {
+  const db = getDB();
+  if (!db) {
+    return null;
+  }
+  const [result] = await db.query("INSERT INTO students SET ?", newSupplier);
+  return { id: result.insertId, ...newSupplier };
 };
 
-Supplier.create = (newSupplier, result) => {
-  const dbConn = Supplier.dbConnect();
-  dbConn.query("INSERT INTO students SET ?", newSupplier, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-    console.log("created supplier: ", { id: res.insertId, ...newSupplier });
-    result(null, { id: res.insertId, ...newSupplier });
-  });
+Supplier.getAll = async () => {
+  const db = getDB();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const [rows] = await db.query("SELECT * FROM students");
+  return rows;
 };
 
-Supplier.getAll = (result) => {
-  const dbConn = Supplier.dbConnect();
-  dbConn.query("SELECT * FROM students", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-    console.log("Students: ", res);
-    result(null, res);
-  });
+Supplier.findById = async (supplierId) => {
+  const db = getDB();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+
+  const row = await db.query("SELECT * FROM students WHERE id = ?", [
+    supplierId,
+  ]);
+
+  return row;
 };
 
-Supplier.findById = (supplierId, result) => {
-  const dbConn = Supplier.dbConnect();
-  dbConn.query(
-    `SELECT * FROM students WHERE id = ${supplierId}`,
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(err, null);
-        return;
-      }
-      if (res.length) {
-        console.log("found supplier: ", res[0]);
-        result(null, res[0]);
-        return;
-      }
-      result({ kind: "not_found" }, null);
-    }
-  );
-};
-
-Supplier.updateById = (id, supplier, result) => {
-  const dbConn = Supplier.dbConnect();
-  dbConn.query(
+Supplier.updateById = async (id, supplier) => {
+  const db = getDB();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const [result] = await db.query(
     "UPDATE students SET name = ?, city = ?, address = ?, email = ?, phone = ?, state = ? WHERE id = ?",
     [
       supplier.name,
@@ -111,51 +57,33 @@ Supplier.updateById = (id, supplier, result) => {
       supplier.phone,
       supplier.state,
       id,
-    ],
-    (err, res) => {
-      if (err) {
-        console.log("error: ", err);
-        result(err, null);
-        return;
-      }
-      if (res.affectedRows === 0) {
-        result({ kind: "not_found" }, null);
-        return;
-      }
-      console.log("updated supplier: ", { id: id, ...supplier });
-      result(null, { id: id, ...supplier });
-    }
+    ]
   );
+  if (result.affectedRows === 0) {
+    throw new Error("not_found");
+  }
+  return { id: id, ...supplier };
 };
 
-Supplier.delete = (id, result) => {
-  const dbConn = Supplier.dbConnect();
-  dbConn.query("DELETE FROM students WHERE id = ?", id, (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-    if (res.affectedRows === 0) {
-      result({ kind: "not_found" }, null);
-      return;
-    }
-    console.log("deleted student with id: ", id);
-    result(null, res);
-  });
+Supplier.delete = async (id) => {
+  const db = getDB();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const [result] = await db.query("DELETE FROM students WHERE id = ?", [id]);
+  if (result.affectedRows === 0) {
+    throw new Error("not_found");
+  }
+  return result;
 };
 
-Supplier.removeAll = (result) => {
-  const dbConn = Supplier.dbConnect();
-  dbConn.query("DELETE FROM students", (err, res) => {
-    if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
-    }
-    console.log(`deleted ${res.affectedRows} students`);
-    result(null, res);
-  });
+Supplier.removeAll = async () => {
+  const db = getDB();
+  if (!db) {
+    throw new Error("Database not available");
+  }
+  const [result] = await db.query("DELETE FROM students");
+  return result;
 };
 
 module.exports = Supplier;

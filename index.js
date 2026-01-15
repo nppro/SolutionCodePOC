@@ -2,12 +2,14 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const supplier = require("./app/controller/supplier.controller");
-const app = express();
 const mustacheExpress = require("mustache-express");
 const favicon = require("serve-favicon");
-const loadConfig = require("./app/config/config");
-
+const { loadConfig } = require("./app/config/config");
 const fs = require("fs");
+const { initDB } = require("./app/config/db");
+
+const app = express();
+let appConfig;
 
 // parse requests of content-type: application/json
 app.use(bodyParser.json());
@@ -39,32 +41,30 @@ app.post("/supplier-update", supplier.update);
 // receive the POST to delete a supplier
 app.post("/supplier-remove/:id", supplier.remove);
 
-// debug
-app.get("/debug", async (req, res) => {
-  const config = await loadConfig.loadConfig();
-  res.json({
-    config: {
-      host: config.APP_DB_HOST,
-      user: config.APP_DB_USER,
-      db: config.APP_DB_NAME,
-    },
-    time: new Date().toISOString(),
-    status: "app is running",
-  });
-});
-
-app.get("/logs", (req, res) => {
-  const logs = fs.readFileSync("/tmp/app.log", "utf-8");
-  res.type("text/plain").send(logs);
-});
-
 // handle 404
 app.use(function (req, res, next) {
   res.status(404).render("404", {});
 });
 
-// set port, listen for requests
-const app_port = process.env.APP_PORT || 3000;
-app.listen(app_port, "0.0.0.0", () => {
-  console.log(`Server is running on port ${app_port}.`);
-});
+async function initializeApp() {
+  appConfig = await loadConfig();
+  await initDB(appConfig);
+
+  app.get("/debug", async (req, res) => {
+    res.json({
+      config: {
+        host: appConfig.APP_DB_HOST,
+        user: appConfig.APP_DB_USER,
+        db: appConfig.APP_DB_NAME,
+      },
+      time: new Date().toISOString(),
+      status: `Server is running on port 3000.`,
+    });
+  });
+
+  app.listen(3000, "0.0.0.0", () => {
+    console.log(`Server is running on port 3000.`);
+  });
+}
+
+initializeApp();
