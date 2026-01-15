@@ -6,7 +6,7 @@
     <div class="alert alert-warning" role="alert">{{msg}}</div>
     {{/errors}}
   </div>
-  <!-- {{#supplier}} -->
+
   <form action="/supplier-update" method="POST">
     <input type="hidden" id="id" name="id" value="{{supplier.id}}" />
     {{>supplier-form-fields}}
@@ -61,7 +61,5 @@
       </div>
     </div>
   </div>
-
-  <!-- {{/supplier}} -->
 </div>
 {{>footer}}

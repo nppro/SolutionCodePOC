@@ -1,5 +1,26 @@
 const { getDB } = require("../config/db");
 
+const DUMMY_SUPPLIERS = [
+  {
+    id: 1,
+    name: "John Doe",
+    address: "123 Main St",
+    city: "Anytown",
+    state: "CA",
+    email: "john.doe@example.com",
+    phone: "123-456-7890",
+  },
+  {
+    id: 2,
+    name: "Jane Smith",
+    address: "456 Oak Ave",
+    city: "Othertown",
+    state: "TX",
+    email: "jane.smith@example.com",
+    phone: "987-654-3210",
+  },
+];
+
 // constructor
 const Supplier = function (supplier) {
   this.id = supplier.id;
@@ -14,7 +35,7 @@ const Supplier = function (supplier) {
 Supplier.create = async (newSupplier) => {
   const db = getDB();
   if (!db) {
-    return null;
+    throw new Error("Database not available");
   }
   const [result] = await db.query("INSERT INTO students SET ?", newSupplier);
   return { id: result.insertId, ...newSupplier };
@@ -34,7 +55,6 @@ Supplier.findById = async (supplierId) => {
   if (!db) {
     throw new Error("Database not available");
   }
-
   const row = await db.query("SELECT * FROM students WHERE id = ?", [
     supplierId,
   ]);

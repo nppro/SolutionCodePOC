@@ -71,7 +71,7 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const supplier = await Supplier.findById(req.params.id);
+    const supplier = await Supplier.findById(parseInt(req.params.id));
     if (!supplier) {
       return res.status(404).send({
         message: `Not found Student with id ${req.params.id}.`,
