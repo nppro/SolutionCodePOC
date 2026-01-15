@@ -40,6 +40,24 @@ app.use(function (req, res, next) {
   res.status(404).render("404", {});
 });
 
+// debug
+app.get("/debug", (req, res) => {
+  res.json({
+    config: {
+      host: config.APP_DB_HOST,
+      user: config.APP_DB_USER,
+      db: config.APP_DB_NAME,
+    },
+    time: new Date().toISOString(),
+    status: "app is running",
+  });
+});
+
+app.get("/logs", (req, res) => {
+  const logs = fs.readFileSync("/tmp/app.log", "utf-8");
+  res.type("text/plain").send(logs);
+});
+
 // set port, listen for requests
 const app_port = process.env.APP_PORT || 3000;
 app.listen(app_port, "0.0.0.0", () => {
