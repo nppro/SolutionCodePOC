@@ -1,5 +1,5 @@
 const mysql = require("mysql2");
-const dbConfig = require("../config/config");
+
 const fs = require("fs");
 // constructor
 const Supplier = function (supplier) {
@@ -13,7 +13,11 @@ const Supplier = function (supplier) {
 };
 // connecting on each request so the server will start without a db connection, plus
 //   a simple mechanism enabling the app to recover from a momentary missing db connection
-Supplier.dbConnect = () => {
+Supplier.dbConnect = async () => {
+  const dbConfig = await require("./app/config/config").loadConfig();
+  let log = `DB CONFIG: ${JSON.stringify(dbConfig)}`;
+  fs.appendFileSync("/tmp/app.log", log);
+
   const connection = mysql.createConnection({
     host: dbConfig.APP_DB_HOST,
     user: dbConfig.APP_DB_USER,
@@ -22,7 +26,6 @@ Supplier.dbConnect = () => {
   });
   connection.connect((error) => {
     if (error) {
-      fs.appendFileSync("/tmp/app.log", error);
       console.log("Error connecting to Db");
       return;
     }
