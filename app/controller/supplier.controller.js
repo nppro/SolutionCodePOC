@@ -71,13 +71,13 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
   try {
-    const data = await Supplier.findById(req.params.id);
-    if (data.length === 0) {
+    const supplier = await Supplier.findById(req.params.id);
+    if (!supplier) {
       return res.status(404).send({
         message: `Not found Student with id ${req.params.id}.`,
       });
     }
-    res.render("supplier-update", { supplier: data });
+    res.render("supplier-update", { supplier });
   } catch (error) {
     res.render("500", {
       message: `Error retrieving student with id ${req.params.id}`,
