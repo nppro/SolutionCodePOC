@@ -76,26 +76,13 @@ exports.findOne = async (req, res) => {
       return res.status(404).send({
         message: `Not found Student with id ${req.params.id}.`,
       });
-    } else res.render("supplier-update", { supplier: data });
+    }
+    res.render("supplier-update", { supplier: data });
   } catch (error) {
     res.render("500", {
       message: `Error retrieving student with id ${req.params.id}`,
     });
   }
-
-  //   Supplier.findById(req.params.id, (err, data) => {
-  //     if (err) {
-  //       if (err.kind === "not_found") {
-  //         res.status(404).send({
-  //           message: `Not found Student with id ${req.params.id}.`,
-  //         });
-  //       } else {
-  //         res.render("500", {
-  //           message: `Error retrieving student with id ${req.params.id}`,
-  //         });
-  //       }
-  //     } else res.render("supplier-update", { supplier: data });
-  //   });
 };
 
 exports.update = [
@@ -131,7 +118,7 @@ exports.update = [
 
     // Create a genre object with escaped and trimmed data.
     const supplier = new Supplier(req.body);
-    supplier.i;
+    supplier.id = req.body.id;
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
