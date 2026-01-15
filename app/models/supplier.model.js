@@ -59,7 +59,7 @@ Supplier.findById = async (supplierId) => {
     supplierId,
   ]);
 
-  return row;
+  return row.length ? row[0] : null;
 };
 
 Supplier.updateById = async (id, supplier) => {
@@ -79,10 +79,7 @@ Supplier.updateById = async (id, supplier) => {
       id,
     ]
   );
-  if (result.affectedRows === 0) {
-    throw new Error("not_found");
-  }
-  return { id: id, ...supplier };
+  return result.affectedRows > 0;
 };
 
 Supplier.delete = async (id) => {

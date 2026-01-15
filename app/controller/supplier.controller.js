@@ -73,8 +73,8 @@ exports.findOne = async (req, res) => {
   try {
     const supplier = await Supplier.findById(parseInt(req.params.id));
     if (!supplier) {
-      return res.status(404).send({
-        message: `Not found Student with id ${req.params.id}.`,
+      return res.status(404).render("404", {
+        message: `Student with id ${req.params.id} not found`,
       });
     }
     res.render("supplier-update", { supplier });
@@ -131,7 +131,14 @@ exports.update = [
     }
 
     try {
-      const result = await Supplier.updateById(req.body.id, supplier);
+      const id = Number(req.params.id);
+      if (!Number.isInteger(id)) {
+        return res.status(400).render("400", {
+          message: "Invalid student ID",
+        });
+      }
+
+      const result = await Supplier.updateById(id, supplier);
       if (!result) {
         res.status(404).send({
           message: `Student with id ${req.body.id} Not found.`,
@@ -149,7 +156,14 @@ exports.update = [
 
 exports.remove = async (req, res) => {
   try {
-    const result = await Supplier.delete(req.params.id);
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) {
+      return res.status(400).render("400", {
+        message: "Invalid student ID",
+      });
+    }
+
+    const result = await Supplier.delete(id);
     if (!result) {
       res.status(404).send({
         message: `Not found Student with id ${req.params.id}.`,
@@ -159,7 +173,7 @@ exports.remove = async (req, res) => {
     res.redirect("/students");
   } catch (error) {
     res.render("500", {
-      message: `Could not delete Student with id ${req.body.id}`,
+      message: `Could not delete Student with id ${req.params.id}`,
     });
   }
 };
