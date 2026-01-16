@@ -55,10 +55,7 @@ Supplier.findById = async (supplierId) => {
   if (!db) {
     throw new Error("Database not available");
   }
-  const row = await db.query("SELECT * FROM students WHERE id = ?", [
-    supplierId,
-  ]);
-
+  const row = await db.query(`SELECT * FROM students WHERE id = ${supplierId}`);
   return row.length ? row[0] : null;
 };
 
