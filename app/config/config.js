@@ -5,8 +5,8 @@ const {
 
 const DEFAULT_CONFIG = {
   APP_DB_HOST: "localhost",
-  APP_DB_USER: "nodeapp",
-  APP_DB_PASSWORD: "student12",
+  APP_DB_USER: "root",
+  APP_DB_PASSWORD: "root",
   APP_DB_NAME: "students",
 };
 

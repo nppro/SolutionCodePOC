@@ -41,6 +41,18 @@ app.post("/supplier-update", supplier.update);
 // receive the POST to delete a supplier
 app.post("/supplier-remove/:id", supplier.remove);
 
+app.get("/debug", (req, res) => {
+  res.json({
+    config: {
+      host: appConfig.APP_DB_HOST,
+      user: appConfig.APP_DB_USER,
+      db: appConfig.APP_DB_NAME,
+    },
+    time: new Date().toISOString(),
+    status: `Server is running on port 3000.`,
+  });
+});
+
 // handle 404
 app.use(function (req, res, next) {
   res.status(404).render("404", {});
@@ -49,18 +61,6 @@ app.use(function (req, res, next) {
 async function initializeApp() {
   appConfig = await loadConfig();
   await initDB(appConfig);
-
-  app.get("/debug", async (req, res) => {
-    res.json({
-      config: {
-        host: appConfig.APP_DB_HOST,
-        user: appConfig.APP_DB_USER,
-        db: appConfig.APP_DB_NAME,
-      },
-      time: new Date().toISOString(),
-      status: `Server is running on port 3000.`,
-    });
-  });
 
   app.listen(3000, "0.0.0.0", () => {
     console.log(`Server is running on port 3000.`);

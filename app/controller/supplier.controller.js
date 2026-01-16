@@ -83,7 +83,8 @@ exports.findOne = async (req, res) => {
         message: `Student with id ${req.params.id} not found`,
       });
     }
-    res.render("supplier-update", { supplier });
+
+    res.render("supplier-update", { supplier: supplier[0] });
   } catch (error) {
     res.render("500", {
       message: `Error retrieving student with id ${req.params.id}`,
@@ -136,14 +137,8 @@ exports.update = [
     }
 
     try {
-      const id = Number(req.params.id);
-      if (!Number.isInteger(id)) {
-        return res.status(400).render("400", {
-          message: "Invalid student ID",
-        });
-      }
+      const result = await Supplier.updateById(supplier.id, supplier);
 
-      const result = await Supplier.updateById(id, supplier);
       if (!result) {
         res.status(404).send({
           message: `Student with id ${req.body.id} Not found.`,
