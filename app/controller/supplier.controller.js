@@ -124,12 +124,11 @@ exports.update = [
 
     // Create a genre object with escaped and trimmed data.
     const supplier = new Supplier(req.body);
-    supplier.id = req.body.id;
 
     if (!errors.isEmpty()) {
       // There are errors. Render the form again with sanitized values/error messages.
       res.render("supplier-update", {
-        supplier: supplier,
+        supplier,
         errors: errors.array(),
       });
 
